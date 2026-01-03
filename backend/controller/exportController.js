@@ -166,32 +166,53 @@ const processMarkdownToDocx = (markdown) => {
         if (nextToken && nextToken.type === "paragraph_open") {
           const inlineToken = tokens[i + 2];
           if (inlineToken && inlineToken.type === "inline") {
-            paragraphs.push({
-              children: [
-                new TextRun({
-                  text: inlineToken.content,
-                  italics: true,
-                  color: "6B7280",
-                  font: DOCX_STYLES.fonts.body,
-                }),
-              ],
-              spacing: {
-                before: { before: 200, after: 200 },
-                indent: { left: 720 },
-                alignment: AlignmentType.JUSTIFIED,
-                border: {
-                  left: {
-                    color: "D1D5DB",
-                    space: 1,
-                    style: "single",
-                    size: 24,
+            paragraphs.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: inlineToken.content,
+                    italics: true,
+                    color: "6B7280",
+                    font: DOCX_STYLES.fonts.body,
+                  }),
+                ],
+                spacing: {
+                  before: { before: 200, after: 200 },
+                  indent: { left: 720 },
+                  alignment: AlignmentType.JUSTIFIED,
+                  border: {
+                    left: {
+                      color: "D1D5DB",
+                      space: 1,
+                      style: "single",
+                      size: 24,
+                    },
                   },
                 },
-              },
-            });
+              })
+            );
             i += 4;
           }
         }
+      } else if (token.type === "code_block" || token.type === "fence") {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: token.content,
+                font: "Courier New",
+                sizes: 20,
+                color: "374151",
+              }),
+            ],
+            spacing: {
+              before: { before: 200, after: 200 },
+              shading: {
+                fill: "D1D5DB",
+              },
+            },
+          })
+        );
       }
     } catch (error) {
       console.error("Error processing markdown token:", error);
