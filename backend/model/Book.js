@@ -9,7 +9,7 @@ const ChapterSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  contenr: {
+  content: {
     type: String,
     default: "",
   },
