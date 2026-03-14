@@ -1125,7 +1125,11 @@ const DashboardPage = () => {
             >
               {user?.avatar ? (
                 <img
-                  src={user.avatar}
+                  src={
+                    user.avatar.startsWith("http")
+                      ? user.avatar
+                      : `http://localhost:8000${user.avatar}`
+                  }
                   alt=""
                   style={{
                     width: "38px",
