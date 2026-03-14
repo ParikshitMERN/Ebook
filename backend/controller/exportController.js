@@ -86,7 +86,7 @@ const processMarkdownToDocx = (markdown) => {
                 font: DOCX_STYLES.fonts.heading,
                 size: fontSize * 2,
               },
-            })
+            }),
           );
           i += 2;
         }
@@ -104,7 +104,7 @@ const processMarkdownToDocx = (markdown) => {
                   line: 360,
                 },
                 alignment: AlignmentType.JUSTIFIED,
-              })
+              }),
             );
           }
           i += 2;
@@ -155,7 +155,7 @@ const processMarkdownToDocx = (markdown) => {
                   before: { before: 50, after: 50 },
                   indent: { left: 720 },
                 },
-              })
+              }),
             );
             i += 4;
           }
@@ -188,7 +188,7 @@ const processMarkdownToDocx = (markdown) => {
                     },
                   },
                 },
-              })
+              }),
             );
             i += 4;
           }
@@ -210,7 +210,7 @@ const processMarkdownToDocx = (markdown) => {
                 fill: "D1D5DB",
               },
             },
-          })
+          }),
         );
       } else if (token.type === "hr") {
         paragraphs.push(
@@ -225,7 +225,7 @@ const processMarkdownToDocx = (markdown) => {
               },
             },
             spacing: { before: 200, after: 200 },
-          })
+          }),
         );
       }
     } catch (error) {
@@ -252,7 +252,7 @@ const processInlineContent = (children) => {
           italics: currentFormatting.italic,
           font: DOCX_STYLES.fonts.body,
           size: DOCX_STYLES.sizes.body * 2,
-        })
+        }),
       );
       textBuffer = "";
     }
@@ -290,7 +290,11 @@ const exportAsDocument = async (req, res) => {
     const sections = [];
     const coverPage = [];
     if (book.coverImage && !book.coverImage.includes("pravatar")) {
-      const imagePath = book.coverImage.substring(1);
+      const imagePath = path.join(
+        __dirname,
+        "../uploads",
+        path.basename(book.coverImage),
+      );
       try {
         if (fs.existsSync(imagePath)) {
           const imageBuffer = fs.readFileSync(imagePath);
@@ -299,7 +303,7 @@ const exportAsDocument = async (req, res) => {
             new Paragraph({
               text: "",
               spacing: { before: 1000 },
-            })
+            }),
           );
           coverPage.push(
             new Paragraph({
@@ -314,13 +318,13 @@ const exportAsDocument = async (req, res) => {
               ],
               alignment: AlignmentType.CENTER,
               spacing: { before: 200, after: 400 },
-            })
+            }),
           );
           coverPage.push(
             new Paragraph({
               text: "",
               pageBreakBefore: true,
-            })
+            }),
           );
         }
       } catch (error) {
@@ -345,7 +349,7 @@ const exportAsDocument = async (req, res) => {
         ],
         alignment: AlignmentType.CENTER,
         spacing: { before: 2000, after: 400 },
-      })
+      }),
     );
 
     if (book.subtitle && book.subtitle.trim()) {
@@ -361,7 +365,7 @@ const exportAsDocument = async (req, res) => {
           ],
           alignment: AlignmentType.CENTER,
           spacing: { after: 400 },
-        })
+        }),
       );
     }
     titlePage.push(
@@ -376,7 +380,7 @@ const exportAsDocument = async (req, res) => {
         ],
         alignment: AlignmentType.CENTER,
         spacing: { after: 200 },
-      })
+      }),
     );
     titlePage.push(
       new Paragraph({
@@ -392,7 +396,7 @@ const exportAsDocument = async (req, res) => {
 
         alignment: AlignmentType.CENTER,
         spacing: { before: 200 },
-      })
+      }),
     );
 
     sections.push({ ...titlePage });
@@ -404,7 +408,7 @@ const exportAsDocument = async (req, res) => {
             new Paragraph({
               text: "",
               pageBreakBefore: true,
-            })
+            }),
           );
         }
 
@@ -424,11 +428,11 @@ const exportAsDocument = async (req, res) => {
               before: DOCX_STYLES.spacing.chapterBefore,
               after: DOCX_STYLES.spacing.chapterAfter,
             },
-          })
+          }),
         );
 
         const contentParagraphs = processMarkdownToDocxParagraphs(
-          chapter.content || ""
+          chapter.content || "",
         );
         sections.push(...contentParagraphs);
       } catch (error) {
@@ -457,11 +461,11 @@ const exportAsDocument = async (req, res) => {
     const buffer = await Packer.toBuffer(doc);
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=${book.title.replace(/[^a-zA-z0-9]/g, "_")}.docx`
+      `attachment; filename=${book.title.replace(/[^a-zA-z0-9]/g, "_")}.docx`,
     );
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     );
     res.setHeader("Content-Length", buffer.length);
     res.send(buffer);
@@ -595,7 +599,7 @@ const renderMarkdown = (doc, markdown) => {
         }
 
         doc.moveDown(
-          TYPOGRAPHY.spacing.headingSpacing.before / TYPOGRAPHY.sizes.body
+          TYPOGRAPHY.spacing.headingSpacing.before / TYPOGRAPHY.sizes.body,
         );
 
         doc
@@ -612,7 +616,7 @@ const renderMarkdown = (doc, markdown) => {
         }
 
         doc.moveDown(
-          TYPOGRAPHY.spacing.headingSpacing.after / TYPOGRAPHY.sizes.body
+          TYPOGRAPHY.spacing.headingSpacing.after / TYPOGRAPHY.sizes.body,
         );
       }
 
@@ -633,7 +637,7 @@ const renderMarkdown = (doc, markdown) => {
 
         if (!inList) {
           doc.moveDown(
-            TYPOGRAPHY.spacing.paragraphSpacing / TYPOGRAPHY.sizes.body
+            TYPOGRAPHY.spacing.paragraphSpacing / TYPOGRAPHY.sizes.body,
           );
         }
       }
@@ -685,7 +689,7 @@ const renderMarkdown = (doc, markdown) => {
       // ---------- CODE BLOCK ----------
       else if (token.type === "code_block" || token.type === "fence") {
         doc.moveDown(
-          TYPOGRAPHY.spacing.paragraphSpacing / TYPOGRAPHY.sizes.body
+          TYPOGRAPHY.spacing.paragraphSpacing / TYPOGRAPHY.sizes.body,
         );
 
         doc
@@ -700,7 +704,7 @@ const renderMarkdown = (doc, markdown) => {
         doc.font(TYPOGRAPHY.fonts.serif).fontSize(TYPOGRAPHY.sizes.body);
 
         doc.moveDown(
-          TYPOGRAPHY.spacing.paragraphSpacing / TYPOGRAPHY.sizes.body
+          TYPOGRAPHY.spacing.paragraphSpacing / TYPOGRAPHY.sizes.body,
         );
       }
 
@@ -742,12 +746,16 @@ const exportAsPDF = async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${book.title.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`
+      `attachment; filename="${book.title.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`,
     );
 
     doc.pipe(res);
     if (book.coverImage && !book.coverImage.includes("pravatar")) {
-      const imagePath = book.coverImage.substring(1);
+      const imagePath = path.join(
+        __dirname,
+        "../uploads",
+        path.basename(book.coverImage),
+      );
       try {
         if (fs.existsSync(imagePath)) {
           const pageWidth =
@@ -802,7 +810,7 @@ const exportAsPDF = async (req, res) => {
             .text(chapter.title || `Chapter ${index + 1}`, { align: "left" });
 
           doc.moveDown(
-            TYPOGRAPHY.spacing.chapterSpacing / TYPOGRAPHY.sizes.body
+            TYPOGRAPHY.spacing.chapterSpacing / TYPOGRAPHY.sizes.body,
           );
 
           // Chapter content

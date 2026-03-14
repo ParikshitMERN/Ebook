@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -8,9 +9,10 @@ import DashboardPage from "./pages/DashboardPage";
 import EditorPage from "./pages/EditorPage";
 import ViewBookPage from "./pages/ViewBookPage";
 import ProfilePage from "./pages/ProfilePage";
+
 const App = () => {
   return (
-    <div>
+    <AuthProvider>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -48,7 +50,7 @@ const App = () => {
           }
         />
       </Routes>
-    </div>
+    </AuthProvider>
   );
 };
 

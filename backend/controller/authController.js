@@ -88,3 +88,29 @@ exports.updateUserProfile = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// Upload avatar
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (req.file) {
+      user.avatar = `/${req.file.filename}`;
+    } else {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const updatedUser = await user.save();
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      avatar: updatedUser.avatar,
+      isPro: updatedUser.isPro,
+    });
+  } catch (error) {
+    console.error("AVATAR ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
